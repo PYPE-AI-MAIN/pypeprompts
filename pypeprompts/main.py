@@ -139,13 +139,18 @@ class PromptAnalyticsTracker:
 
     def _convert_sets_to_lists(self, obj):
         if isinstance(obj, dict):
-            return {k: self._convert_sets_to_lists(v) for k, v in obj.items()}
+            new_dict = {}
+            for k, v in obj.items():
+                new_key = k.replace('.', '_').replace(' ', '_') if isinstance(k, str) else k
+                new_dict[new_key] = self._convert_sets_to_lists(v)
+            return new_dict
         elif isinstance(obj, list):
             return [self._convert_sets_to_lists(elem) for elem in obj]
         elif isinstance(obj, set):
             return list(obj)
         else:
             return obj
+
 
     def _send_analytics(self, analytics: AnalyticsItem):
         headers = {
